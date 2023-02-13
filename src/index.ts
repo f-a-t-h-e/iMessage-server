@@ -7,6 +7,10 @@ import { createServer } from "http";
 import resolvers from "./graphql/resolvers";
 import typeDefs from "./graphql/typeDefs";
 import cors from "cors";
+import "dotenv/config";
+import { getSession } from "next-auth/react";
+import { GraphQLContext, Session } from "./utils/types";
+import { PrismaClient } from "@prisma/client";
 
 const bootstrap = async () => {
   // Create the schema, which will be used separately by ApolloServer and
@@ -20,6 +24,10 @@ const bootstrap = async () => {
   // server and the ApolloServer to this HTTP server.
   const app = express();
   const httpServer = createServer(app);
+
+  // Context parameters
+  const prisma = new PrismaClient();
+  // const pubsub
 
   // Set up ApolloServer.
   const server = new ApolloServer({
@@ -37,14 +45,20 @@ const bootstrap = async () => {
     "/graphql",
     cors<cors.CorsRequest>({
       credentials: true,
+      origin: process.env.CLIENT_ORIGIN,
     }),
     express.json(),
     expressMiddleware(server, {
-      context: async ({ req }) => ({ token: req.headers.token }),
+      context: async ({ req, res }): Promise<GraphQLContext> => {
+        const session = (await getSession({ req })) as Session;
+        console.log("🚀 ~ file: index.ts:47 ~ context: ~ session", session);
+
+        return { session, prisma };
+      },
     })
   );
 
-  const PORT = 4000;
+  const PORT = process.env.PORT;
 
   // Now that our HTTP server is fully set up, we can listen to it.
   await new Promise<void>((resolve) =>
