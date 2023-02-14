@@ -1,15 +1,15 @@
 const typeDefs = /* GraphQL */ `
-  type User {
+  type SearchedUser {
     id: ID!
     username: String!
   }
 
   type Query {
-    searchUsers(username: String): [User]
+    searchUsers(username: String!): [SearchedUser!]!
   }
 
   type Mutation {
-    createUsername(username: String): CreateUsernameResponse
+    createUsername(username: String!): CreateUsernameResponse
   }
 
   type CreateUsernameResponse {
