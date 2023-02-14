@@ -2,6 +2,7 @@ const typeDefs = /* GraphQL */ `
   type SearchedUser {
     id: ID!
     username: String!
+    image: String
   }
 
   type Query {
