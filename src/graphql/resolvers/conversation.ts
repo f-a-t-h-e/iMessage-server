@@ -1,8 +1,49 @@
-import { GraphQLContext } from "../../utils/types";
+import { GraphQLContext, IConversationPopulated } from "../../utils/types";
 import { GraphQLError } from "graphql";
 import { Prisma } from "@prisma/client";
 
 const resolvers = {
+  Query: {
+    conversations: async (
+      parent: any,
+      args: any,
+      context: GraphQLContext
+    ): Promise<IConversationPopulated[]> => {
+      const { prisma, session } = context;
+
+      if (!session?.user) {
+        throw new GraphQLError("Not authorized");
+      }
+      const { id: userId } = session.user;
+
+      try {
+        const { conversations } = await prisma.user.findUniqueOrThrow({
+          where: { id: userId },
+          select: {
+            conversations: {
+              select: {
+                conversation: {
+                  include: conversationPopulated,
+                },
+                /*  */
+                hasSeenLatestMessage: true,
+                id: true,
+              },
+            },
+          },
+        });
+
+        return conversations.map((conv) => conv.conversation);
+      } catch (error: any) {
+        console.log(
+          "🚀 ~ conversation.ts:19 ~ Query>conversations: ~ error",
+          error
+        );
+        throw new GraphQLError(error?.message);
+      }
+      return [];
+    },
+  },
   Mutation: {
     createConversation: async (
       parent: any,
@@ -51,7 +92,7 @@ const resolvers = {
   },
 };
 
-export const participantPopulated =
+export const participantsPopulated =
   Prisma.validator<Prisma.ConversationParticipantInclude>()({
     user: {
       select: {
@@ -64,7 +105,7 @@ export const participantPopulated =
 export const conversationPopulated =
   Prisma.validator<Prisma.ConversationInclude>()({
     participants: {
-      include: participantPopulated,
+      include: participantsPopulated,
     },
     latestMessage: {
       include: {

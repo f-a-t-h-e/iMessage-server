@@ -1,4 +1,13 @@
 const typeDefs = /* GraphQL */ `
+  type User {
+    id: String!
+    name: String
+    username: String
+    email: String!
+    emailVerified: Boolean
+    image: String
+  }
+
   type SearchedUser {
     id: ID!
     username: String!
