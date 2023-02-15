@@ -1,14 +1,32 @@
 import { Prisma, PrismaClient } from "@prisma/client";
+import { PubSub } from "graphql-subscriptions";
+import { Context } from "graphql-ws/lib/server";
 import { ISODateString } from "next-auth";
+
 import {
   conversationPopulated,
   participantsPopulated,
 } from "../graphql/resolvers/conversation";
 
+/**
+ * Server Configration
+ */
+
 export interface GraphQLContext {
   session: Session | null;
   prisma: PrismaClient;
-  // pubsub
+  pubsub: PubSub;
+}
+
+export interface Session {
+  user?: User;
+  expires: ISODateString;
+}
+
+export interface SubscriptionContext extends Context {
+  connectionParams: {
+    session?: Session;
+  };
 }
 
 /**
@@ -22,11 +40,6 @@ export type CreateUsernameResponse =
       error: string;
     };
 
-export interface Session {
-  user?: User;
-  expires: ISODateString;
-}
-
 export interface User {
   id: string;
   username: string;
@@ -39,12 +52,10 @@ export interface User {
 /**
  * CONVERSATIONS
  */
-export interface IConversationPopulated
-  extends Prisma.ConversationGetPayload<{
-    include: typeof conversationPopulated;
-  }> {}
+export type IConversationPopulated = Prisma.ConversationGetPayload<{
+  include: typeof conversationPopulated;
+}>;
 
-export interface IParticipantPopulated
-  extends Prisma.ConversationParticipantGetPayload<{
-    include: typeof participantsPopulated;
-  }> {}
+export type IParticipantPopulated = Prisma.ConversationParticipantGetPayload<{
+  include: typeof participantsPopulated;
+}>;

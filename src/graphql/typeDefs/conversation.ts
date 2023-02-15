@@ -26,6 +26,10 @@ const typeDefs = /* GraphQL */ `
   type Query {
     conversations: [Conversation!]!
   }
+
+  type Subscription {
+    conversationCreated: Conversation
+  }
 `;
 
 export default typeDefs;
