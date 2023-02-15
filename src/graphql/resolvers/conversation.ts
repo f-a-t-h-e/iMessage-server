@@ -103,7 +103,7 @@ const resolvers = {
       //     return pubsub.asyncIterator(["CONVERSATION_CREATED"]);
       //   },
       subscribe: withFilter(
-        (parent: any, args: unknown, context: GraphQLContext) => {
+        (_: any, __: unknown, context: GraphQLContext) => {
           const { pubsub } = context;
           return pubsub.asyncIterator(["CONVERSATION_CREATED"]);
         },
