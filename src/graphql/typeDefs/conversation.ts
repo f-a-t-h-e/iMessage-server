@@ -5,6 +5,10 @@ const typeDefs = /* GraphQL */ `
     createConversation(participantIds: [String!]!): CreateConversationResponse!
   }
 
+  type Mutation {
+    markConvAsRead(conversationId: String!): Boolean!
+  }
+
   type CreateConversationResponse {
     conversationId: String!
   }
@@ -23,12 +27,20 @@ const typeDefs = /* GraphQL */ `
     hasSeenLatestMessage: Boolean
   }
 
+  type ConversationUpdatedSubscriptionPayload {
+    conversation: Conversation
+  }
+
   type Query {
     conversations: [Conversation!]!
   }
 
   type Subscription {
     conversationCreated: Conversation
+  }
+
+  type Subscription {
+    conversationUpdated: ConversationUpdatedSubscriptionPayload
   }
 `;
 

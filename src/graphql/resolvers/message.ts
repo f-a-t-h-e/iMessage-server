@@ -195,11 +195,10 @@ const resolvers = {
            */
           { messageSent: conversation.latestMessage }
         );
-        // pubsub.publish("CONVERSATION_UPDATED", {
-        //   conversationUpdated: {
-        //     conversation,
-        //   },
-        // });
+
+        pubsub.publish("CONVERSATION_UPDATED", {
+          conversationUpdated: { conversation },
+        });
         console.log("done");
 
         return true;
