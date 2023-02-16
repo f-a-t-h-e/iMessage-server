@@ -105,6 +105,7 @@ const resolvers = {
       subscribe: withFilter(
         (_: any, __: unknown, context: GraphQLContext) => {
           const { pubsub } = context;
+
           return pubsub.asyncIterator(["CONVERSATION_CREATED"]);
         },
         (
@@ -119,7 +120,9 @@ const resolvers = {
           // Only push an update if the conversation is related
           // to the listening user
 
-          return !!participants.find((parti) => parti.id === session?.user?.id);
+          return !!participants.find(
+            (parti) => parti.userId === session?.user?.id
+          );
         }
       ),
     },
